@@ -34,6 +34,8 @@ dotnet img2motd.dll $IMAGE_FILE_PATH
 
 Optional arguments:
 
-* specific output file path like `--out /etc/motd`
+* specific output file path, for example, `--out /etc/motd` (remember sudo), then the 'picture' can be printed ervertime you login. just like:
+
+  ![](https://bakaya.ro/picture/img2motd.png)
 
 * specific a background color like `--background #ffffff` if you customized your shell's background and there are some pixels have alpha-value neither 255 nor 0 in the image.
