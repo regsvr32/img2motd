@@ -30,7 +30,7 @@ namespace img2motd {
                     double delay = 0;
                     if (frameCount > 1) {
                         var item = img.GetPropertyItem(0x5100);
-                        delay = (item.Value[0] + item.Value[1] * 256) / 1000.0;
+                        delay = (item.Value[0] + item.Value[1] * 256) / 100.0;
                     }
                     for (int i = 0; i < frameCount; i++) {
                         img.SelectActiveFrame(fd, i);
