@@ -27,16 +27,16 @@ namespace img2motd {
                     sw.Write("cat <<CURSOR_ANCHOR\n\x1b[?25l\x1b[s\nCURSOR_ANCHOR\n");
                     var fd = new FrameDimension(img.FrameDimensionsList[0]);
                     int frameCount = img.GetFrameCount(fd);
-                    int delay = 0;
+                    double delay = 0;
                     if (frameCount > 1) {
                         var item = img.GetPropertyItem(0x5100);
-                        delay = (item.Value[0] + item.Value[1] * 256) * 10000;
+                        delay = (item.Value[0] + item.Value[1] * 256) / 1000.0;
                     }
                     for (int i = 0; i < frameCount; i++) {
                         img.SelectActiveFrame(fd, i);
                         using (var bmp = new Bitmap(img)) { sw.Write(CatFrame(bmp, i)); }
                         if (delay > 0) {
-                            sw.Write($"usleep {delay}\n");
+                            sw.Write($"sleep {delay}\n");
                         }
                     }
                     sw.Write("cat <<SHOW_CURSOR\n\x1b[?25h\nSHOW_CURSOR\n");
