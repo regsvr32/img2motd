@@ -4,9 +4,7 @@ convert a image file (pixel-style better) to text what can be printed colorfully
 
 ## Dependences
 
-* [dotnet core 2.2 or higher](https://dotnet.microsoft.com/download/dotnet-core/2.2)
-
-*Run on Linux will crash when loading local libraries, currently works well on Windows system only, copy the generated file to Linux machine.*
+* [dotnet core 3.0 or higher](https://dotnet.microsoft.com/download/dotnet-core/2.2)
 
 ## Usage
 
@@ -39,3 +37,5 @@ Optional arguments:
   ![](https://bakaya.ro/picture/img2motd.png)
 
 * specific a background color like `--background #ffffff` if you customized your shell's background and there are some pixels have alpha-value neither 255 nor 0 in the image.
+
+* optionally generate executable shell script with `--script`, which supports animated gif images.

@@ -6,6 +6,7 @@ namespace img2motd {
         static void Main(string[] args) {
             string readFile = null, writeFile = null;
             Color shellBackground = Color.Black;
+            bool plainText = true;
 
             for (int i = 0; i < args.Length; i++) {
                 switch (args[i]) {
@@ -14,6 +15,9 @@ namespace img2motd {
                         break;
                     case "--out":
                         writeFile = args[++i];
+                        break;
+                    case "--script":
+                        plainText = false;
                         break;
                     default:
                         readFile = args[i];
@@ -26,9 +30,9 @@ namespace img2motd {
                 return;
             }
 
-            writeFile = writeFile ?? $"{readFile}.motd";
+            writeFile = writeFile ?? $"{readFile}.{(plainText ? "motd" : "sh")}";
 
-            new MotdGenerator(readFile, writeFile, shellBackground).Generate();
+            new MotdGenerator(readFile, writeFile, shellBackground).Generate(plainText);
             Console.WriteLine(writeFile);
         }
     }

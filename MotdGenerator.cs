@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace img2motd {
@@ -14,8 +14,38 @@ namespace img2motd {
             shellBackground = background;
         }
 
-        public void Generate() =>
-            File.WriteAllText(writeFile, string.Concat(Translate()));
+        public void Generate(bool plainText) {
+            using (var img = Image.FromFile(readFile)) {
+                if (plainText) {
+                    using (var bmp = new Bitmap(img)) {
+                        File.WriteAllText(writeFile, string.Concat(Translate(bmp, false)));
+                    }
+                    return;
+                }
+                using (var sw = File.CreateText(writeFile)) {
+                    sw.Write("#!/bin/bash\n");
+                    sw.Write("cat <<CURSOR_ANCHOR\n\x1b[?25l\x1b[s\nCURSOR_ANCHOR\n");
+                    var fd = new FrameDimension(img.FrameDimensionsList[0]);
+                    int frameCount = img.GetFrameCount(fd);
+                    int delay = 0;
+                    if (frameCount > 1) {
+                        var item = img.GetPropertyItem(0x5100);
+                        delay = (item.Value[0] + item.Value[1] * 256) * 10000;
+                    }
+                    for (int i = 0; i < frameCount; i++) {
+                        img.SelectActiveFrame(fd, i);
+                        using (var bmp = new Bitmap(img)) { sw.Write(CatFrame(bmp, i)); }
+                        if (delay > 0) {
+                            sw.Write($"usleep {delay}\n");
+                        }
+                    }
+                    sw.Write("cat <<SHOW_CURSOR\n\x1b[?25h\nSHOW_CURSOR\n");
+                    sw.Flush();
+                }
+            }
+        }
+
+        string CatFrame(Bitmap bmp, int frame) => $"cat <<FRAME_{frame}\n{string.Concat(Translate(bmp, true))}FRAME_{frame}\n";
 
         int BlendChannel(byte orig, byte bg, byte a) => (orig * a + bg * (255 - a)) / 255;
 
@@ -37,8 +67,8 @@ namespace img2motd {
         string ColorCtrl(Color color, bool back) =>
             $"\x1b[{(back ? 48 : 38)};2;{color.R};{color.G};{color.B}m";
 
-        IEnumerable<string> Translate() {
-            var bmp = new Bitmap(Image.FromFile(readFile));
+        IEnumerable<string> Translate(Bitmap bmp, bool resetCusor) {
+            if (resetCusor) { yield return "\x1b[u"; }
             yield return "\x1b[0m";
             Color? back = null, front = null;
             for (int j = 0; j < bmp.Height / 2; j++) {
