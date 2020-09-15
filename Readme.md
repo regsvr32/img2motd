@@ -4,7 +4,7 @@ convert a image file (pixel-style better) to text what can be printed colorfully
 
 ## Dependences
 
-* [dotnet core 3.0 or higher](https://dotnet.microsoft.com/download/dotnet-core/2.2)
+* [dotnet core 3.0 or higher](https://dotnet.microsoft.com/download/dotnet/current)
 
 ## Usage
 
